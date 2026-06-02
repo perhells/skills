@@ -52,8 +52,6 @@ Diff: new profile endpoint, bandwidth-driven
 
   - new route returns only display fields, no nested orders
   - cached 60s at the edge
-
-  Closes #128
   ```
 
 Diff: one-line typo fix
