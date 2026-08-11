@@ -25,6 +25,10 @@ Procedure:
   your lens. Read the enclosing function of each hunk you flag — bugs in
   unchanged lines of a touched function are in scope (the change re-exposes or
   fails to fix them).
+- Only flag issues the diff introduces or re-exposes. Pre-existing
+  cleanup/style/efficiency issues in code the diff does not change are out
+  of scope; pre-existing code qualifies only when it is genuinely broken
+  (a real correctness bug).
 - Skip test/fixture hunks (`test/`, `spec/`, `__tests__/`, `*_test.*`,
   `*.test.*`, `fixtures/`, `testdata/`) unless your lens says otherwise.
 - If the scope block carries a user-supplied review target, it is scope

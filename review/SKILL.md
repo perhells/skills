@@ -83,11 +83,15 @@ Resolve the review target before anything else:
 1. An explicit target was given → use it verbatim.
 2. Otherwise, check for a PR open for the current branch
    (`gh pr view --json number,state`). If one exists, review that PR.
-3. Otherwise, ask the user (AskUserQuestion, one question) what to review,
-   with two options: **unstaged changes** (`git diff`) and **branch changes
-   off the main branch** (`git diff main...HEAD`) — "Other" lets them name
-   something else. If asking is impossible (non-interactive run), fall back
-   to unstaged changes if non-empty, else branch changes.
+3. Otherwise, review the changes made on the current branch off the main
+   branch: `git diff main...HEAD` (substitute the repo's default branch).
+   Only if that diff is empty (e.g. the current branch IS the default
+   branch) fall back to unstaged changes (`git diff`).
+
+**Branch-scope rule.** Findings must target changes the review target itself
+introduces. Pre-existing issues in code the diff does not touch are out of
+scope — unless something is genuinely broken (a real correctness bug), which
+may be surfaced regardless of where it lives.
 
 ## Level: low (no subagents)
 

@@ -26,9 +26,10 @@ return a DIFF_COMMAND that requires changing the checkout first.
    explicit target, use the first of these that yields a non-empty diff:
    1. the PR open for the current branch — check with
       `gh pr view --json number,state`; if one exists, `gh pr diff <n>`,
-   2. unstaged changes: `git diff`,
-   3. all changes on the local branch off the main branch:
-      `git diff main...HEAD` (substitute the repo's default branch).
+   2. all changes on the current branch off the main branch:
+      `git diff main...HEAD` (substitute the repo's default branch),
+   3. unstaged changes: `git diff` — only when the branch diff is empty
+      (e.g. the current branch is the default branch).
 2. List the changed files as repo-relative paths.
 3. Summarize what changed in one paragraph.
 4. List the CLAUDE.md files that apply to the changed files: the user-level
