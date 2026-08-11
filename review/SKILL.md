@@ -66,7 +66,7 @@ symlinks in `~/.claude/agents/`:
 To override a model for one step without editing the agent file, set it in
 the table below — a non-empty value here is passed as the `model` parameter on
 the Agent tool call and takes precedence over the agent frontmatter. Valid
-values: `haiku`, `sonnet`, `opus`.
+values: `haiku`, `sonnet`, `opus`, `fable`.
 
 | Step                | Model override |
 | ------------------- | -------------- |
