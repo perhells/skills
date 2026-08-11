@@ -28,7 +28,7 @@ Open a pull request grounded in the diff. Title and body terse and exact. No flu
 - Lead with the _why_ — the motivation/problem the diff doesn't show. One short paragraph.
 - Then a terse bullet list of notable changes (`-` not `*`), only what a reviewer can't infer at a glance.
 - Skip sections that add nothing. A small, self-explanatory PR can be one line.
-- No hard line wraps. Reference issues at end: `Closes #42`, `Refs #17`.
+- No hard line wraps.
 - Always end body with: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`
 
 **What NEVER goes in:**
@@ -52,11 +52,13 @@ Diff: new profile endpoint, bandwidth-driven
 
   - new route returns only display fields, no nested orders
   - cached 60s at the edge
+
+  🤖 Generated with [Claude Code](https://claude.com/claude-code)
   ```
 
 Diff: one-line typo fix
 
-- ✅ title `docs: fix broken link in README`, body empty
+- ✅ title `docs: fix broken link in README`, body only the attribution line
 
 ## Auto-Clarity
 
@@ -64,4 +66,4 @@ Always include the _why_ for: breaking changes, security fixes, data migrations,
 
 ## Boundaries
 
-Writes the PR title and body and opens via `gh pr create`. Does not commit, stage, or push unrelated work-in-progress. Confirm the base branch if ambiguous. "stop caveman" / "normal mode": revert to verbose PR style.
+Writes the PR title and body and opens via `gh pr create`. Does not commit, stage, or push unrelated work-in-progress. Confirm the base branch if ambiguous.
