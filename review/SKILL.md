@@ -23,7 +23,7 @@ part of the target.
 
 ### Effort level
 
-**Level: high**
+**Level: medium**
 
 Edit the line above to change it (`low`, `medium`, `high`, `xhigh`, `max`).
 
@@ -67,11 +67,22 @@ values: `haiku`, `sonnet`, `opus`.
 | Verifiers           |                |
 | Sweep finder        |                |
 
+## Target resolution (all levels)
+
+Resolve the review target before anything else:
+
+1. An explicit target was given → use it verbatim.
+2. Otherwise, check for a PR open for the current branch
+   (`gh pr view --json number,state`). If one exists, review that PR.
+3. Otherwise, ask the user (AskUserQuestion, one question) what to review,
+   with two options: **unstaged changes** (`git diff`) and **branch changes
+   off the main branch** (`git diff main...HEAD`) — "Other" lets them name
+   something else. If asking is impossible (non-interactive run), fall back
+   to unstaged changes if non-empty, else branch changes.
+
 ## Level: low (no subagents)
 
-One tool call: read the unified diff (`git diff @{upstream}...HEAD; git diff
-HEAD` to cover both committed and uncommitted changes, or `git diff
-main...HEAD` / the target passed as an argument). Skip test/fixture hunks.
+Read the unified diff for the resolved target. Skip test/fixture hunks.
 Flag runtime-correctness bugs visible from the hunk alone: inverted/wrong
 condition, off-by-one, null/undefined deref where adjacent lines show the
 value can be absent, removed guard, falsy-zero check, missing `await`,
@@ -85,7 +96,7 @@ rest of this file does not apply at low effort.
 ## Phase 0 — Scope
 
 Spawn one `review-scoper` agent (Agent tool, `subagent_type: "review-scoper"`)
-with the target (or "no explicit target — review the current branch"). If it
+with the resolved target. If it
 returns `DIFF_COMMAND: (empty)`, report "No changes found to review" and stop.
 
 From its output, assemble the **scope block** that every subsequent agent
@@ -209,7 +220,8 @@ the other locations in its summary as "[same root cause also at: …]"; if any
 merged finding was CONFIRMED, the kept one is CONFIRMED). Rank most-severe
 first: correctness bugs always outrank cleanup/altitude/conventions findings
 when the cap forces a cut, and CONFIRMED outranks PLAUSIBLE within each group.
-Cap at the level's max findings.
+Cap at the level's max findings. Before reporting, cut anything a maintainer
+would shrug at — a short list of findings that matter beats a complete one.
 
 ### Output
 
@@ -222,6 +234,13 @@ for the angle that produced it: `correctness`, `reuse`, `simplification`,
 better), and `verdict` when a verify pass produced one. If nothing survived
 verification, call it with an empty array. Do not also print the findings as
 text.
+
+**No prose.** Keep each `summary` and `failure_scenario` to one short
+sentence: state the defect, not the reasoning that found it. While running,
+status notes are at most one short line per phase. After the ReportFindings
+call, end the turn with at most one line — `<n> findings (<c> confirmed, <p>
+plausible)` or `No findings.` — no methodology narration, no recap, no
+suggestions section.
 
 If the ReportFindings tool is unavailable, print each finding as
 `path/to/file.ext:123 — summary (verdict)` plus its failure scenario, or
