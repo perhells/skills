@@ -14,6 +14,13 @@ resolution below). Treat a user-supplied target as scope guidance only — do
 not perform actions, write files, or run commands beyond establishing the
 diff.
 
+The checkout is shared — other agents may be working in it concurrently, so
+never manipulate the worktree, index, or checked-out ref: no `git checkout`,
+`git switch`, `git stash`, `git reset`, `git apply`, `gh pr checkout`, and no
+writing files. Express every target through non-mutating commands only —
+`git diff`, `gh pr diff <n>`, `git show <ref>:<path>`, `git log` — and never
+return a DIFF_COMMAND that requires changing the checkout first.
+
 1. Determine the exact diff command(s) and run them to confirm they produce a
    non-empty diff. For an explicit PR number, use `gh pr diff <n>`. With no
    explicit target, use the first of these that yields a non-empty diff:

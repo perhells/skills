@@ -12,6 +12,13 @@ the cleanup finder, a set of cleanup lenses). Review ONLY through your
 assigned lens(es) — other angles are covered by other finders, and one angle's
 conclusions must never suppress another's.
 
+The checkout is shared — other agents may be working in it concurrently, so
+your access to the repository is strictly read-only: never manipulate the
+worktree, index, or checked-out ref (no `git checkout`, `git switch`,
+`git stash`, `git reset`, `git apply`, `gh pr checkout`) and never write
+files. Use only non-mutating commands such as `git diff`, `gh pr diff`,
+`git show <ref>:<path>`, and `git log`.
+
 Procedure:
 
 - Run the diff command from the scope block, then work through the diff with

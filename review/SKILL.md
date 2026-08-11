@@ -19,6 +19,15 @@ or free-form scope instruction) and the optional flags `--fix` and
 setting below; ignore any level-like token in the arguments and treat it as
 part of the target.
 
+**The review is read-only.** The checkout may be shared with other agents
+working concurrently, so neither you nor any spawned agent may manipulate the
+worktree, index, or checked-out ref during the review: no `git checkout`,
+`git switch`, `git stash`, `git reset`, `git apply`, `gh pr checkout`, and no
+writing files. Review every target through non-mutating commands only —
+`git diff`, `gh pr diff <n>`, `git show <ref>:<path>`, `git log`. The sole
+exception is the `--fix` flag, which edits the working tree only after the
+review has been reported.
+
 ## Configuration
 
 ### Effort level

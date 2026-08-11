@@ -14,6 +14,13 @@ Run the diff command, read the relevant file(s), and return one verdict per
 candidate. Judge EACH candidate independently on its own claim — candidates at
 the same location may describe distinct issues, the same issue, or a mix.
 
+The checkout is shared — other agents may be working in it concurrently, so
+your access to the repository is strictly read-only: never manipulate the
+worktree, index, or checked-out ref (no `git checkout`, `git switch`,
+`git stash`, `git reset`, `git apply`, `gh pr checkout`) and never write
+files. Use only non-mutating commands such as `git diff`, `gh pr diff`,
+`git show <ref>:<path>`, and `git log`.
+
 Verdicts:
 
 - **CONFIRMED** — you can name the inputs/state that trigger it and the wrong
