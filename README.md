@@ -38,7 +38,7 @@ npx skills@latest add perhells/skills -g -s '*' -y
   ln -s ~/.agents/skills/review/agents/review-*.md ~/.claude/agents/
   ```
 
-- **implement-linear-issue** — Implement a Linear issue end-to-end: resolve open questions via `grill-me`, create a feature branch, implement one commit at a time, run the project's tests, and optionally open a PR via `open-a-pr`.
+- **implement-linear-issue** — Implement a Linear issue end-to-end: evaluate whether the issue is still worth implementing (grounded in code exploration and metrics, not questions to the user), resolve open questions via `grill-me`, create a feature branch, implement one commit at a time, run the project's tests, and optionally open a PR via `open-a-pr`.
 
   ```
   npx skills@latest add perhells/skills/implement-linear-issue -g
