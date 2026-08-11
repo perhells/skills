@@ -27,4 +27,3 @@ You MUST:
 
 - Always develop on a feature branch, never directly on the default branch.
 - A feature branch may be based on the project's default branch or another feature branch.
-- Commit one change at a time.
