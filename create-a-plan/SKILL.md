@@ -1,15 +1,15 @@
 ---
 name: create-a-plan
-description: Create a plan through user interview, codebase exploration, and module design, then save it locally in the plans folder and add a task to progress.yaml. Use when user wants to create a plan, design a feature, or plan new work.
+description: Create a plan through user interview, codebase exploration, and module design, then submit it as a Linear issue (new or updated) or save it as a local markdown file. Use when user wants to create a plan, design a feature, write a PRD, or plan new work.
 ---
 
-This skill will be invoked when the user wants to create a plan for a feature or change. You may skip steps if you don't consider them necessary.
+This skill will be invoked when the user wants to create a plan (or PRD) for a feature or change. You may skip steps if you don't consider them necessary.
 
 1. Ask the user for a long, detailed description of the problem they want to solve and any potential ideas for solutions.
 
 2. Explore the repo to verify their assertions and understand the current state of the codebase.
 
-3. Interview the user relentlessly about every aspect of this plan until you reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.
+3. Resolve every open question and design decision by interviewing the user with the `grill-me` skill. If `grill-me` is unavailable, interview inline following the same rules: walk down each branch of the design tree resolving dependencies between decisions one-by-one, ask one question at a time, provide your recommended answer, and explore the codebase instead of asking whenever it can answer the question.
 
 4. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
 
@@ -17,7 +17,17 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-5. Once you have a complete understanding of the problem and solution, use the template below to write the plan. Save it as a markdown file in the `plans/` folder in the project root (create the folder if it doesn't exist). Follow the naming convention of already existing plans, and use a descriptive filename, e.g. `plans/0003-user-authentication-flow.md`.
+5. Ask the user where the plan should go:
+
+   - **Linear issue** — requires a Linear MCP server; if none is available, say so and offer the local file instead. Ask whether to create a new issue or update an existing one (if updating, ask for the identifier, e.g. NEX-123). Also ask for:
+     - **Team** (required for new issues)
+     - **Project** (optional)
+     - **Parent issue** (optional)
+     - **Labels** (optional)
+     - **Priority** (optional: 0=None, 1=Urgent, 2=High, 3=Normal, 4=Low)
+   - **Local markdown file** — ask where to save it, and follow the naming convention of existing files at that location, if any.
+
+6. Once you have a complete understanding of the problem and solution, use the template below to write the plan. For Linear, submit the plan title as the issue `title` and the rendered template as the issue `description` (markdown). For a local file, save the rendered template to the agreed path.
 
 <plan-template>
 
@@ -72,5 +82,3 @@ A description of the things that are out of scope for this plan.
 Any further notes about the feature.
 
 </plan-template>
-
-6. Add a new task to `progress.yaml` in the project root for implementation of this plan. Reference the plan file path. Don't add duplicate redundant information from the plan itself.
