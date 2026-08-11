@@ -11,7 +11,7 @@ A Linear MCP server MUST be available — this skill cannot run without it. If n
 
 1. Fetch the Linear issue and read all of it, including its description, comments, and any linked PRDs, sub-issues, or attachments.
 
-2. Evaluate whether the issue still makes sense to implement (see "Evaluating the issue" below). On a no-go, report the evidence to the user and stop.
+2. Evaluate whether the issue still makes sense to implement (see "Evaluating the issue" below). If the evidence casts doubt on the issue, present it and ask the user whether to implement.
 
 3. If there are any outstanding questions or decisions to take, resolve them using the `grill-me` skill.
 
@@ -40,4 +40,4 @@ Before writing any code, verify that the issue's premise still holds:
 
 Answer these questions yourself by exploring the code and querying metrics where available — do NOT ask the user anything the code or metrics can answer. Only bring a question to the user if it's a genuine product or priority decision that evidence cannot settle.
 
-Conclude with a short go/no-go assessment grounded in what you found. A no-go (already done, premise no longer holds, problem not observed in practice) ends the skill: present the evidence and stop instead of implementing.
+Conclude with a short assessment grounded in what you found. If the premise clearly holds, continue with the next step. If the evidence casts doubt on it (already done, premise no longer holds, problem not observed in practice), present the findings and ask the user whether to implement anyway, adjust the issue first, or abandon it — the decision is the user's, not the skill's.
