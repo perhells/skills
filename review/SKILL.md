@@ -244,9 +244,12 @@ configured effort level) — each entry has `file`, `line`, `summary`,
 consequence clause), `failure_scenario`, `category` (a short kebab-case slug
 for the angle that produced it: `correctness`, `reuse`, `simplification`,
 `efficiency`, `altitude`, `conventions`, or a more specific slug when one fits
-better), and `verdict` when a verify pass produced one. If nothing survived
-verification, call it with an empty array. Do not also print the findings as
-text.
+better), and `verdict` when a verify pass produced one. Prefix each `summary`
+and `short_summary` with the verdict word (`CONFIRMED: ` or `PLAUSIBLE: `;
+omit when no verify pass ran) — the UI otherwise signals the verdict only
+with a colored dot; the prefix counts toward the 60-character cap. If nothing
+survived verification, call it with an empty array. Do not also print the
+findings as text.
 
 **No prose.** Keep each `summary` and `failure_scenario` to one short
 sentence: state the defect, not the reasoning that found it. While running,
