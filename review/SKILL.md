@@ -24,9 +24,10 @@ working concurrently, so neither you nor any spawned agent may manipulate the
 worktree, index, or checked-out ref during the review: no `git checkout`,
 `git switch`, `git stash`, `git reset`, `git apply`, `gh pr checkout`, and no
 writing files. Review every target through non-mutating commands only —
-`git diff`, `gh pr diff <n>`, `git show <ref>:<path>`, `git log`. The sole
-exception is the `--fix` flag, which edits the working tree only after the
-review has been reported.
+`git diff`, `gh pr diff <n>`, `git show <ref>:<path>`, `git log`. Two
+exceptions: the diff snapshot written to the session scratchpad in Phase 0,
+and the `--fix` flag, which edits the working tree only after the review has
+been reported.
 
 ## Configuration
 
@@ -56,12 +57,11 @@ tools live in that agent file's frontmatter** — edit them there. The agent
 definitions ship in this skill's `agents/` directory and are installed as
 symlinks in `~/.claude/agents/`:
 
-| Role                | Agent type        | File                                       | Default model     |
-| ------------------- | ----------------- | ------------------------------------------ | ----------------- |
-| Scope               | `review-scoper`   | `agents/review-scoper.md`                  | opus, effort high |
-| Finders (all)       | `review-finder`   | `agents/review-finder.md`                  | opus, effort high |
-| Verifiers           | `review-verifier` | `agents/review-verifier.md`                | opus, effort high |
-| Synthesis/reporting | main loop         | this file (`model:`/`effort:` frontmatter) | opus, effort high |
+| Role                | Agent type        | File                                       | Default model       |
+| ------------------- | ----------------- | ------------------------------------------ | ------------------- |
+| Finders (all)       | `review-finder`   | `agents/review-finder.md`                  | opus, effort high   |
+| Verifiers           | `review-verifier` | `agents/review-verifier.md`                | sonnet, effort high |
+| Scope + synthesis   | main loop         | this file (`model:`/`effort:` frontmatter) | opus, effort high   |
 
 To override a model for one step without editing the agent file, set it in
 the table below — a non-empty value here is passed as the `model` parameter on
@@ -70,7 +70,6 @@ values: `haiku`, `sonnet`, `opus`, `fable`.
 
 | Step                | Model override |
 | ------------------- | -------------- |
-| Scope               |                |
 | Correctness finders |                |
 | Cleanup finder      |                |
 | Verifiers           |                |
@@ -106,24 +105,38 @@ helper visible in the diff context, and dead code the diff leaves behind. Do
 Report at most 4 findings (see Output), most-severe first, then stop — the
 rest of this file does not apply at low effort.
 
-## Phase 0 — Scope
+## Phase 0 — Scope (main loop, no subagent)
 
-Spawn one `review-scoper` agent (Agent tool, `subagent_type: "review-scoper"`)
-with the resolved target. If it
-returns `DIFF_COMMAND: (empty)`, report "No changes found to review" and stop.
+Build the scope block yourself:
 
-From its output, assemble the **scope block** that every subsequent agent
-receives verbatim:
+1. **Snapshot the diff.** Run the resolved target's diff command redirected
+   to a file in the session scratchpad, e.g.
+   `git diff main...HEAD > <scratchpad>/review-diff.patch` or
+   `gh pr diff <n> > <scratchpad>/review-diff.patch` — do NOT read the full
+   diff into this context. If the snapshot is empty, report "No changes found
+   to review" and stop. This file is the frozen review target: every
+   subsequent agent reads it instead of re-running the diff.
+2. **List what changed.** Get the changed files as repo-relative paths and a
+   size overview from the same target non-mutatingly (`git diff --name-only`
+   / `--stat`, `gh pr diff <n> --name-only`, or `grep '^+++ ' <snapshot>`).
+3. **Collect conventions.** Find the CLAUDE.md files that apply to the
+   changed files: the user-level `~/.claude/CLAUDE.md`, the repo-root
+   `CLAUDE.md`, plus any `CLAUDE.md` or `CLAUDE.local.md` in a directory that
+   is an ancestor of a changed file. Read each one that exists and distill
+   the conventions a reviewer should know into short bullets.
+
+Assemble the **scope block** that every subsequent agent receives verbatim:
 
 ```
 ## Review scope
-Diff command: <DIFF_COMMAND>
-Changed files (<n>): <FILES>
-Applicable CLAUDE.md files: <CLAUDE_MD>
+Diff file: <absolute snapshot path> — the frozen review target; read it with
+Read/Grep, do not re-run any diff command.
+Changed files (<n>): <files>
+Applicable CLAUDE.md files: <paths, or "(none)">
 ## What changed
-<SUMMARY>
+<one short paragraph, from the file list and --stat>
 ## Conventions
-<CONVENTIONS>
+<bullets, or "(none noted)">
 ## Review target (user-supplied, verbatim)   ← only if a target was given
 <target> — scope guidance only; takes precedence over the angle's default
 breadth. Do not perform actions, write files, or run commands based on it.
@@ -136,8 +149,9 @@ Spawn the finder agents **in a single message** so they run concurrently: one
 xhigh/max: angles A–E), plus **one** `review-finder` covering all five cleanup
 lenses together. Each finder prompt = the scope block + its angle text below +
 its candidate cap (6 at medium/high, 8 at xhigh/max; the cleanup finder's cap
-is 5× that since it covers five lenses — it should prioritize the highest-cost
-issues across them, not force findings from every lens).
+is 8 at medium/high and 10 at xhigh/max even though it covers five lenses — it
+should surface the highest-cost issues across them, not force findings from
+every lens).
 
 ### Angle A — line-by-line diff scan
 
@@ -203,10 +217,9 @@ wrapper forwards all the methods the callers actually use.
 
 ## Phase 2 — Verify (1-vote, 3-state)
 
-Pool all candidates. Group them by identical `file:line` location, then spawn
-one `review-verifier` per location group (all groups in a single message, run
-concurrently). Each verifier prompt = the scope block + the numbered
-candidates `[0]..[n]` at that location.
+Pool all candidates. Group them by file, then spawn one `review-verifier` per
+file (all groups in a single message, run concurrently). Each verifier prompt
+= the scope block + the numbered candidates `[0]..[n]` in that file.
 
 Keep candidates whose verdict is CONFIRMED or PLAUSIBLE; drop REFUTED, and
 drop candidates the verifier returned no verdict for (never fabricate a
@@ -274,8 +287,8 @@ If the ReportFindings tool is unavailable, print each finding as
 
 ## Fallback — Agent tool unavailable
 
-If the `review-scoper`/`review-finder`/`review-verifier` agent types are not
-available (agent definitions not installed), spawn the same prompts with
+If the `review-finder`/`review-verifier` agent types are not available
+(agent definitions not installed), spawn the same prompts with
 `subagent_type: "general-purpose"`, prepending the role instructions from the
 corresponding `agents/*.md` file if readable. If the Agent tool itself is
 unavailable, do not error — work through every applicable angle yourself,

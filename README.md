@@ -32,7 +32,7 @@ npx skills@latest add perhells/skills -g -s '*' -a claude-code -y
   npx skills@latest add perhells/skills/review -g -a claude-code
   ```
 
-  The skill spawns three custom agent types (scoper, finder, verifier) whose definitions ship in `review/agents/`. `npx skills` installs only the skill, so link the agent definitions afterwards:
+  The skill spawns two custom agent types (finder, verifier) whose definitions ship in `review/agents/`. `npx skills` installs only the skill, so link the agent definitions afterwards:
 
   ```
   ln -s ~/.claude/skills/review/agents/review-*.md ~/.claude/agents/
