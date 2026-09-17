@@ -18,7 +18,7 @@ npx skills@latest add perhells/skills -g -s '*' -a claude-code -y
   npx skills@latest add perhells/skills/grill-me -g -a claude-code
   ```
 
-- **create-a-plan** — Create a plan through user interview, codebase exploration, and module design, then submit it as a Linear issue or save it as a local markdown file. Delegates its interview to `grill-me`, so install that alongside.
+- **create-a-plan** — Create a plan through user interview, codebase exploration, and module design, split it into PR-sized plans when the change is large, then submit it as a Linear issue (with sub-issues per slice) or save it as local markdown files. Delegates its interview to `grill-me`, so install that alongside.
 
   ```
   npx skills@latest add perhells/skills/create-a-plan -g -a claude-code
