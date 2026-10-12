@@ -31,7 +31,7 @@ Open a pull request grounded in the diff. Title and body terse and exact. No flu
 - No hard line wraps.
 - Always end body with: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`
 
-**What NEVER goes in:**
+**Leave out:**
 
 - "This PR does X", "I", "we", "now", "currently" — restating the diff.
 - Emoji unless repo convention requires.

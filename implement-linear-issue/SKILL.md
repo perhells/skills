@@ -27,11 +27,7 @@ A Linear MCP server MUST be available — this skill cannot run without it. If n
 
 9. Ask the user whether they want to create a PR. If so, use the `open-a-pr` skill.
 
-You MUST:
-
-- Always develop on a feature branch, never directly on the default branch.
-- A feature branch may be based on the project's default branch or another feature branch.
-- Never implement more than one Linear issue in one branch or PR.
+Branching: work on a feature branch, based on the default branch or another feature branch, never on the default branch itself. One Linear issue per branch and PR.
 
 ## Scoping the issue
 
