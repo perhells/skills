@@ -35,11 +35,12 @@ Check with the user that these modules match their expectations. Check with the 
 
 ## Sizing and splitting
 
-A plan is implemented as a single PR. Before writing, estimate the hand-written diff each plan implies from the modules sketched in step 4: new and modified source, tests, config, docs. Do not count generated code, lockfiles, vendored dependencies, fixtures, snapshots, recorded data, or scaffolding produced by a tool.
+A plan is implemented as a single PR that a reviewer can read in one sitting. Judge that from the modules sketched in step 4: how many concerns the plan touches and how much hand-written change each needs. Generated code, lockfiles, vendored dependencies, fixtures, snapshots, recorded data and tool scaffolding do not count.
 
-- Aim for a few hundred lines of hand-written diff per plan. Above roughly 500 lines, split. Above 1000, always split unless the size is inherent (see below).
+- Split when a plan mixes concerns a reviewer would want to judge separately (a refactor and a behaviour change, a schema change and its wiring, a new module and its first caller), or when it is clearly too much to review in one sitting.
 - Size is inherent, and a large PR is acceptable, when the bulk is bootstrapping a new service or project, adding a dependency, vendoring, a mechanical rename or move, a large migration or generated file, or bulk data. Say so in the plan so the reviewer knows what to skim.
-- Do not split to hit a number if the slices cannot stand on their own. A slice that leaves main broken, half-wired, or that only makes sense together with the next one is not a slice; merge it with its neighbour.
+- Do not split for size alone if the slices cannot stand on their own. A slice that leaves main broken, half-wired, or that only makes sense together with the next one is not a slice; merge it with its neighbour.
+- Never write a line count or size estimate into a plan. It is a target the implementation should not chase.
 
 How to slice, in order of preference:
 
@@ -50,7 +51,7 @@ How to slice, in order of preference:
 
 Each slice must be mergeable on its own, keep main working and tests green, and carry its own tests. Refactors that prepare the ground for the feature go in their own slice ahead of it.
 
-When in doubt whether to split, ask the user; when the user has expressed no preference and the estimate is clearly above the threshold, split.
+When in doubt whether to split, ask the user; when the user has expressed no preference and the plan clearly mixes separable concerns, split.
 
 <plan-template>
 
@@ -118,7 +119,7 @@ The solution to the problem, from the user's perspective, at the level of the wh
 
 ## Slices
 
-A numbered list of the slices in implementation order, one line each: what it delivers, what it depends on, and a rough size. Each slice links to its child plan once created.
+A numbered list of the slices in implementation order, one line each: what it delivers and what it depends on. Each slice links to its child plan once created.
 
 ## Cross-Cutting Decisions
 
@@ -165,9 +166,5 @@ Same rules as the plan template, limited to this slice. Do not repeat cross-cutt
 ## Testing Decisions
 
 Same rules as the plan template, limited to this slice.
-
-## Estimated Size
-
-Rough hand-written diff, and what is excluded from the count (generated, vendored, fixtures) if anything large is expected.
 
 </child-plan-template>
